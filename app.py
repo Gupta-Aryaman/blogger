@@ -52,6 +52,7 @@ class Post(db.Model):
     image_path = db.Column(db.String(500), nullable = False)
     description = db.Column(db.String(200), nullable = False)
     time_stamp = db.Column(db.DateTime, default = datetime.utcnow)
+    number_of_likes = db.Column(db.Integer, default = 0)
     # comments = db.relationship('Comment', backref = 'post', lazy = True)
 
 class Comment(db.Model):
@@ -66,6 +67,12 @@ class Follower(db.Model):
     serial_number = db.Column(db.Integer,autoincrement = True, primary_key = True)
     ID = db.Column(db.Integer, db.ForeignKey('app_user.id'), nullable = False)
     following_ID = db.Column(db.Integer, db.ForeignKey('app_user.id'), nullable = False)
+
+class Likes(db.Model):
+    __tablename__ = 'likes'
+    serial_number = db.Column(db.Integer,autoincrement = True, primary_key = True)
+    post_ID = db.Column(db.Integer, db.ForeignKey('post.post_id'), nullable = False)
+    liked_by_userID = db.Column(db.Integer, db.ForeignKey('app_user.id'), nullable = False)
 
 @login_manager.user_loader
 def load_user(user):
@@ -133,10 +140,33 @@ def feed():
     uname = current_user.username
     other_users = App_user.query.filter(App_user.username != uname).all()
 
+    if request.args.get("post_id")!=None and request.args.get("like")!=None:
+        post_id = request.args.get("post_id")
+        q = Likes(post_ID=post_id, liked_by_userID = current_user.id)
+        db.session.add(q)
+        db.session.commit()
+        q = Post.query.filter_by(post_id=post_id).first()
+        q.number_of_likes = q.number_of_likes + 1
+        db.session.add(q)
+        db.session.commit()
+        return redirect("/feed")
+
+    if request.args.get("post_id")!=None and request.args.get("unlike")!=None:
+        post_id = request.args.get("post_id")
+        q = Likes.query.filter(Likes.post_ID==post_id, Likes.liked_by_userID==current_user.id).first()
+        db.session.delete(q)
+        db.session.commit()
+        q = Post.query.filter_by(post_id=post_id).first()
+        q.number_of_likes = q.number_of_likes - 1
+        db.session.add(q)
+        db.session.commit()
+        return redirect("/feed")
+
+    posts_liked_by_user = Likes.query.filter_by(liked_by_userID = current_user.id).all()
     # posts_of_following_users = Post.query.join(Follower, Post.ID == Follower.following_ID).filter(Follower.ID == current_user.id)
     posts_of_following_users = db.session.query(Post).join(Follower, Post.ID == Follower.following_ID).filter(Follower.ID == current_user.id).order_by(Post.time_stamp)
 
-    return render_template("feed.html", users = other_users, posts=posts_of_following_users)
+    return render_template("feed.html", users = other_users, posts=posts_of_following_users, posts_liked_by_user = posts_liked_by_user)
 
 @app.route("/feed/<user>")
 @login_required

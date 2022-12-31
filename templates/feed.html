@@ -68,10 +68,21 @@
                           <p class="card-text">{{i.description}}</p>
                           
                             <a href="javascript:void();" class="btn btn-primary readmore-btn">Read More</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            {% if already_like == 0 %}
-                            <Button id="btnh1" class="b"><i class="fas fa-heart"></i></Button>
+                            {% set dev = namespace(value=0) %}
+                            {% for j in posts_liked_by_user%}
+                            
+                              {% if j.post_ID == i.post_id%}
+                                {% set dev.value = dev.value + 1 %}
+
+                              {% endif %}
+                              
+                            {%- endfor %}
+
+                            
+                            {% if dev.value | int > 0 %}
+                            <Button id="btnh1" class="c" onclick = "window.location.href='/feed?post_id={{i.post_id}}&unlike'"><i class="fas fa-heart"></i></Button>
                             {% else %}
-                            <Button id="btnh1" class="c"><i class="fas fa-heart"></i></Button>
+                            <Button id="btnh1" class="b" onclick = "window.location.href='/feed?post_id={{i.post_id}}&like'"><i class="fas fa-heart"></i></Button>
                             {% endif %}
                         </div>
                       </div>
