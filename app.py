@@ -197,7 +197,15 @@ def profile_others(user):
 @app.route("/feed/search", methods = ["GET", "POST"])
 @login_required
 def search():
-    return render_template("search.html")
+    if request.method == "POST":
+        username = request.form["username"]
+        return redirect(username)
+    other_users = App_user.query.filter(App_user.username != current_user.username).all()
+    l = []
+    for i in other_users:
+        l.append(i.username)
+    print(l)
+    return render_template("search.html", list = l)
 
 
 @app.route("/profile", methods = ["GET", "POST"])

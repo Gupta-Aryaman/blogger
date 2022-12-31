@@ -5,7 +5,7 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
 
-<nav class="navbar navbar-expand-lg bg-light">
+<nav class="navbar navbar-expand-lg  navbar-light" style="background-color: #e3f2fd;">
     <div class="container-fluid">
       <!-- <a class="navbar-brand" href="#"> -->
         <!-- <p style="">Welcome 
@@ -39,15 +39,8 @@
       
         <div class="btn-group" style="padding-right: 5em;">
           <button type="button" class="btn btn-outline-dark" onclick = "window.location.href='/feed/search'">Search Users</button>
-          <button type="button" class="btn btn-outline-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-            Search Users
-          </button>
-          <ul class="dropdown-menu">
-            {% for i in users %}
-            <li><a class="dropdown-item" href="/feed/{{i.username}}"> {{i.username}}</a></li>
-            {% endfor %}
-          </ul>
         </div>
+        
 
       </div>
     </div>
