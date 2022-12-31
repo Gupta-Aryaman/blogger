@@ -7,10 +7,12 @@ import bcrypt
 from datetime import datetime
 
 
+
 #for picture
 from werkzeug.utils import secure_filename
 import uuid as uuid
 
+from PIL import Image #module name = pillow
 
 curr_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -188,16 +190,14 @@ def profile_others(user):
     following = Follower.query.filter_by(ID = q.id).count()
     followers = Follower.query.filter_by(following_ID = q.id).count()
     posts = Post.query.filter(Post.ID == q.id).all()
-    other_users = App_user.query.filter(App_user.username != q.username).all()
+    other_users = App_user.query.filter(App_user.username != current_user.username).all()
 
     return render_template("others_profile.html",users = other_users, user = q, isfollow = isfollow, followers = followers, following = following, posts = posts)
 
-# def follow(user):
-#     q = App_user.query.filter_by(username = user).first_or_404()
-#     follow_query = Follower(ID = current_user.id, following_ID = q.id)
-#     db.session.add(follow_query)
-#     db.session.commit()
-
+@app.route("/feed/search", methods = ["GET", "POST"])
+@login_required
+def search():
+    return render_template("search.html")
 
 
 @app.route("/profile", methods = ["GET", "POST"])
@@ -234,6 +234,22 @@ def add_post():
         pic_filename = secure_filename(pic.filename)
         pic_name = str(uuid.uuid1()) + "_" + pic_filename
         pic.save(os.path.join("static/", pic_name))
+
+        thumbnail = Image.open("static/"+ pic_name)
+        size = (406, 406)
+        # generating the thumbnail from given size
+        thumbnail.thumbnail(size, Image.ANTIALIAS)
+
+        offset_x = int(max((size[0] - thumbnail.size[0]) / 2, 0))
+        offset_y = int(max((size[1] - thumbnail.size[1]) / 2, 0))
+        offset_tuple = (offset_x, offset_y) #pack x and y into a tuple
+
+        # create the image object to be the final product
+        final_thumb = Image.new(mode='RGBA',size=size,color=(255,255,255,0))
+        # paste the thumbnail into the full sized image
+        final_thumb.paste(thumbnail, offset_tuple)
+        # save (the PNG format will retain the alpha band unlike JPEG)
+        final_thumb.save("static/"+ pic_name,'PNG')
 
         q = Post(ID = current_user.id, username = current_user.username, image_path = pic_name, description = desc)
         db.session.add(q)
@@ -305,13 +321,24 @@ def edit_profile():
         return render_template("edit_profile.html", condition = "fail")
     return render_template("edit_profile.html")
 
+@app.route("/profile/followers")
+@login_required
+def display_followers():
+    other_users = App_user.query.filter(App_user.username != current_user.username).all()
+    followers = db.session.query(App_user).join(Follower, App_user.id == Follower.ID).filter(Follower.following_ID == current_user.id).all()
+    return render_template("followers.html", followers = followers, users = other_users)
+
+@app.route("/profile/following")
+@login_required
+def display_following():
+    other_users = App_user.query.filter(App_user.username != current_user.username).all()
+    following = db.session.query(App_user).join(Follower, App_user.id == Follower.following_ID).filter(Follower.ID == current_user.id).all()
+    return render_template("following.html", following = following, users = other_users)
 @app.route("/logout")
 @login_required
 def logout():
     logout_user()
     return redirect("/")    
-
-
 
 if __name__ == '__main__':
     db.create_all()

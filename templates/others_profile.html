@@ -87,8 +87,10 @@
                   {% for i in posts %}
                   <div class="col-sm-4 py-3">
                     <div class="card box-shadow">
-                      <img src="..\static\{{i.image_path}}" class="card-img-top" height="50%" width="50%">
-                      <div class="card-body">
+                      <div style="width: 406px; height:406px; background-color: rgb(234, 234, 234);">
+                      <img src="..\static\{{i.image_path}}" class="card-img-top">
+                      </div>
+                      <div class="card-body" style="background-color:rgb(246, 246, 246);">
                         <p class="card-text">{{i.description}}</p>
                         <a href="javascript:void();" class="btn btn-primary readmore-btn">Read More</a>
                       </div>
