@@ -8,6 +8,10 @@
             Posts
         </Title>
         <style>
+          body {
+            background-size: 40px 40px;
+            background-image: radial-gradient(circle, #000000 1px, rgba(0, 0, 0, 0) 1px);
+          }
           .box-shadow{
             box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.05);
           }
@@ -24,7 +28,7 @@
             }
             .card-text{
               line-height: 28px;
-              height: 90px;
+              height: 50px;
               overflow: hidden;
             }
             .b{
@@ -47,12 +51,26 @@
             .c:hover{
               color: gray;
             }
+            .main-panel {
+                z-index: 1;
+            }
         </style>
+        
         
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
         <script src = "https://kit.fontawesome.com/f6dcf461c1.js" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+        <script>
+          // $(".readmore-btn").on('click', function(){
+          //   $(this).parent().toggleClass("showContent");
+          // });
+
+          function toggleView(card) {
+            $(`#card-content-${card}`).toggleClass("showContent")
+          }
+        </script>
       </head>
     <body>
         {% include 'navbar.html' %}       
@@ -61,13 +79,19 @@
                   <div class="row">
                     {% for i in posts %}
                     <div class="col-sm-4 py-3">
-                      <div class="card box-shadow">
-                        <img src="static\{{i.image_path}}" class="card-img-top" height="50%" width="50%">
-                        <div class="card-body">
+                      <div class="card box-shadow" >
+                        <div style="width: 406px; height:406px; background-color: rgb(234, 234, 234);">
+                        <img src="static\{{i.image_path}}" class="card-img-top">
+                        </div>
+                        <div class="card-body" id="card-content-{{ i.post_id }}" style="background-color:rgb(246, 246, 246);">
                           <h5 class="card-title">{{i.username}}</h5>
                           <p class="card-text">{{i.description}}</p>
-                          
-                            <a href="javascript:void();" class="btn btn-primary readmore-btn">Read More</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            
+                          <table class="main-panel table table-borderless">
+                            <tr>
+                            <th style="padding: 0;">
+                            <a href="javascript:toggleView(`{{ i.post_id }}`);" class="btn btn-primary readmore-btn">Read More</a>
+                            </th>
                             {% set dev = namespace(value=0) %}
                             {% for j in posts_liked_by_user%}
                             
@@ -77,25 +101,30 @@
                               {% endif %}
                               
                             {%- endfor %}
-
-                            
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th style="padding: 0;">
                             {% if dev.value | int > 0 %}
                             <Button id="btnh1" class="c" onclick = "window.location.href='/feed?post_id={{i.post_id}}&unlike'"><i class="fas fa-heart"></i></Button>
                             {% else %}
                             <Button id="btnh1" class="b" onclick = "window.location.href='/feed?post_id={{i.post_id}}&like'"><i class="fas fa-heart"></i></Button>
                             {% endif %}
+                            </th>
+                            </tr>
+                          </table>
                         </div>
                       </div>
                     </div>
                     {% endfor %}
                   </div>
             </div>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
-        <script>
-          $(".readmore-btn").on('click', function(){
-            $(this).parent().toggleClass("showContent");
-          });
-        </script>
+            
             {% block content %}
             {% if posts.count() == 0 %}
               <p class="fs-3 text-center" style="padding-top:100px">There were no posts in your feed. <br> Connect with other users to see what they are posting.</p>
