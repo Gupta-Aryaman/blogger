@@ -1,0 +1,4 @@
+-> password check in signup page
+-> add profile picture input in signup page
+-> add no. of posts corresponding to each user
+-> timestamp of post upload
