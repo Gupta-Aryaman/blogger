@@ -1,11 +1,9 @@
 import os
 from flask import *
-from flask_sqlalchemy import *
-from sqlalchemy import select
+from flask_sqlalchemy import SQLAlchemy
 from flask_login import *
 import bcrypt
 from datetime import datetime
-
 
 
 #for picture
@@ -13,6 +11,7 @@ from werkzeug.utils import secure_filename
 import uuid as uuid
 
 from PIL import Image #module name = pillow
+
 
 curr_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -190,9 +189,10 @@ def profile_others(user):
     following = Follower.query.filter_by(ID = q.id).count()
     followers = Follower.query.filter_by(following_ID = q.id).count()
     posts = Post.query.filter(Post.ID == q.id).all()
+    number_of_posts = Post.query.filter(Post.ID == q.id).count()
     other_users = App_user.query.filter(App_user.username != current_user.username).all()
 
-    return render_template("others_profile.html",users = other_users, user = q, isfollow = isfollow, followers = followers, following = following, posts = posts)
+    return render_template("others_profile.html",users = other_users, user = q, isfollow = isfollow, followers = followers, following = following, posts = posts, number_of_posts = number_of_posts)
 
 @app.route("/feed/search", methods = ["GET", "POST"])
 @login_required
@@ -228,8 +228,9 @@ def profile():
     following = Follower.query.filter_by(ID = current_user.id).count()
     followers = Follower.query.filter_by(following_ID = current_user.id).count()
     posts = Post.query.filter(Post.ID == current_user.id).all()
+    number_of_posts = Post.query.filter(Post.ID == current_user.id).count()
 
-    return render_template("profile.html", users = other_users, follower = followers, following = following, post = posts)
+    return render_template("profile.html", users = other_users, follower = followers, following = following, post = posts, number_of_posts = number_of_posts)
 
 
 @app.route("/profile/add_post", methods = ["GET", "POST"])
@@ -263,13 +264,14 @@ def add_post():
         db.session.add(q)
         db.session.commit()
         return redirect("/profile")
-
+    
+    
     return render_template("add_post.html")
 
 @app.route("/profile/edit", methods = ["GET", "POST"])
 @login_required
 def edit_profile():
-    if request.method == "POST":
+    if request.method == "POST" and request.form['action'] == "update":
         user_pass = current_user.password
         x = request.form["old_pwd"]
         x = bytes(x, 'utf-8')
@@ -325,6 +327,35 @@ def edit_profile():
                 db.session.commit()
         return redirect("/profile")
 
+    if request.method == "POST" and request.form['action'] == "delete":
+        user_pass = current_user.password
+        x = request.form["old_pwd"]
+        x = bytes(x, 'utf-8')
+
+        if bcrypt.checkpw(x, user_pass) == False:
+            return redirect("/profile/edit?invalid")
+
+        q = Likes.query.filter_by(liked_by_userID = current_user.id).all()
+        for i in q:
+            db.session.delete(i)
+        
+        r = Post.query.filter_by(ID = current_user.id).all()
+        for i in r:
+            db.session.delete(i)
+        
+        s = Follower.query.filter_by(ID = current_user.id).all()
+        for i in s:
+            db.session.delete(i)
+        
+        t = Follower.query.filter_by(following_ID = current_user.id).all()
+        for i in t:
+            db.session.delete(i)
+
+        u = App_user.query.filter_by(id = current_user.id).first()
+        db.session.delete(u)
+        db.session.commit()
+        return redirect("/login?status=del_success")
+
     if request.args.get("invalid")!=None:
         return render_template("edit_profile.html", condition = "fail")
     return render_template("edit_profile.html")
@@ -350,5 +381,5 @@ def logout():
 
 if __name__ == '__main__':
     db.create_all()
-    app.run(host="192.168.29.203", debug= True)
-    # app.run(debug = True)
+    # app.run(host="192.168.29.203", debug= True)
+    app.run(debug = True)

@@ -54,6 +54,16 @@
             .main-panel {
                 z-index: 1;
             }
+            .x{
+              background: transparent;
+              outline: none;
+              border: none;
+              padding:0%;
+            }
+            .x:hover{
+              text-decoration: underline;
+              font-size: 105%;
+            }
         </style>
         
         
@@ -84,7 +94,7 @@
                         <img src="static\{{i.image_path}}" class="card-img-top">
                         </div>
                         <div class="card-body" id="card-content-{{ i.post_id }}" style="background-color:rgb(246, 246, 246);">
-                          <h5 class="card-title">{{i.username}}</h5>
+                          <button class="x" onclick = "window.location.href='/feed/{{i.username}}'"><h5 class="card-title">{{i.username}}</h5></button>
                           <p class="card-text">{{i.description}}</p>
                             
                           <table class="main-panel table table-borderless">

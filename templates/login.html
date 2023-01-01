@@ -121,6 +121,9 @@
           {% elif condition=="invalid" %}
           <div class="alert alert-danger" role="alert">
               Invalid Username/Password! </div>
+          {% elif condition=="del_success" %}
+          <div class="alert alert-success" role="alert">
+              User successfully deleted! </div>
           {% endif %}
         {% endblock content %}        
 
