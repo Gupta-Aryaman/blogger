@@ -56,13 +56,6 @@ class Post(db.Model):
     number_of_likes = db.Column(db.Integer, default = 0)
     # comments = db.relationship('Comment', backref = 'post', lazy = True)
 
-class Comment(db.Model):
-    __tablename__ = 'comment'
-    comment_id = db.Column(db.Integer, autoincrement = True, primary_key = True)
-    ID = db.Column(db.Integer, db.ForeignKey('app_user.id'), nullable = False)
-    post_id = db.Column(db.Integer, db.ForeignKey('post.post_id'), nullable = False)
-    comment = db.Column(db.String, nullable = False)
-
 class Follower(db.Model):
     __tablename__ = 'follower'
     serial_number = db.Column(db.Integer,autoincrement = True, primary_key = True)
@@ -172,7 +165,8 @@ def feed():
 @app.route("/feed/<user>")
 @login_required
 def profile_others(user):  
-    q = App_user.query.filter_by(username = user).first_or_404()
+    q = App_user.query.filter_by(username = user).first()
+    x = App_user.query.filter_by(username = user).count()
 
     if request.args.get("follow")!=None:
         follow_query = Follower(ID = current_user.id, following_ID = q.id)
@@ -184,6 +178,8 @@ def profile_others(user):
         db.session.delete(query)
         db.session.commit()
         return redirect("/feed/"+user)
+    if x==0:
+        return redirect("/feed/search")
 
     isfollow = db.session.query(Follower).filter(Follower.ID == current_user.id, Follower.following_ID == q.id).count()
     following = Follower.query.filter_by(ID = q.id).count()
@@ -199,6 +195,8 @@ def profile_others(user):
 def search():
     if request.method == "POST":
         username = request.form["username"]
+        if(username==current_user.username):
+            return redirect("/profile")
         return redirect(username)
     other_users = App_user.query.filter(App_user.username != current_user.username).all()
     l = []
@@ -381,5 +379,5 @@ def logout():
 
 if __name__ == '__main__':
     db.create_all()
-    # app.run(host="192.168.29.203", debug= True)
-    app.run(debug = True)
+    app.run(host="192.168.29.203", debug= True)
+    # app.run(debug = True)
