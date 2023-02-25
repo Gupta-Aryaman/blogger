@@ -1,0 +1,8 @@
+bcrypt==4.0.1
+Flask==2.2.2
+Flask-Login==0.6.2
+Flask-SQLAlchemy==3.0.2
+Jinja2==3.1.2
+Pillow==9.3.0
+SQLAlchemy==1.4.45
+Werkzeug==2.2.2

@@ -29,7 +29,6 @@ app.app_context().push()
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-# salt = b'$2b$12$TuFQCkjOA/JLl1/HTpY5Uu'
 salt = bcrypt.gensalt()
 
 
@@ -41,9 +40,6 @@ class App_user(db.Model, UserMixin):
     profile_pic = db.Column(db.String, nullable = False)
     last_name = db.Column(db.String, nullable = False)
     password = db.Column(db.String, nullable = False)
-    # comments = db.relationship('Comment', backref = 'app_user', lazy = True)
-    # posts = db.relationship('Post', backref = 'app_user', lazy = True)
-    # followers = db.relationship('Follower', backref = 'app_user', lazy = True)
 
 class Post(db.Model):
     __tablename__ = 'post'
@@ -54,7 +50,6 @@ class Post(db.Model):
     description = db.Column(db.String(200), nullable = False)
     time_stamp = db.Column(db.DateTime, default = datetime.utcnow)
     number_of_likes = db.Column(db.Integer, default = 0)
-    # comments = db.relationship('Comment', backref = 'post', lazy = True)
 
 class Follower(db.Model):
     __tablename__ = 'follower'
@@ -67,6 +62,8 @@ class Likes(db.Model):
     serial_number = db.Column(db.Integer,autoincrement = True, primary_key = True)
     post_ID = db.Column(db.Integer, db.ForeignKey('post.post_id'), nullable = False)
     liked_by_userID = db.Column(db.Integer, db.ForeignKey('app_user.id'), nullable = False)
+
+
 
 @login_manager.user_loader
 def load_user(user):
@@ -86,7 +83,6 @@ def login():
 
         if find_user:
             user_pass = find_user.password
-            # user_pass = bytes(user_pass, 'utf-8')
             if bcrypt.checkpw(pwd, user_pass):
                 login_user(find_user)
                 return redirect("/feed")
@@ -157,7 +153,6 @@ def feed():
         return redirect("/feed")
 
     posts_liked_by_user = Likes.query.filter_by(liked_by_userID = current_user.id).all()
-    # posts_of_following_users = Post.query.join(Follower, Post.ID == Follower.following_ID).filter(Follower.ID == current_user.id)
     posts_of_following_users = db.session.query(Post).join(Follower, Post.ID == Follower.following_ID).filter(Follower.ID == current_user.id).order_by(Post.time_stamp)
 
     return render_template("feed.html", users = other_users, posts=posts_of_following_users, posts_liked_by_user = posts_liked_by_user)
@@ -294,7 +289,6 @@ def edit_profile():
         if(pfp.filename!=""):
             print("hi")
             image = True
-            # pfp = request.files['pfp']
             image_filename = secure_filename(pfp.filename)
             pic_name = str(uuid.uuid1()) + "_" + image_filename
 
@@ -379,5 +373,4 @@ def logout():
 
 if __name__ == '__main__':
     db.create_all()
-    app.run(host="192.168.29.203", debug= True)
-    # app.run(debug = True)
+    app.run(debug = True)

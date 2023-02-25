@@ -1,0 +1,9 @@
+Implemented the following functionalites - 
+1) login/signup page
+2) user's feed-posts, follow information
+3) user's profile - number of posts, following, followers
+4) blogs/post management - add, delete
+5) Validation on input fields
+6) Blogs engagement - readmore button, like/unlike
+7) Styling and aesthetics
+8) Proper login system
