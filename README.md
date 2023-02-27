@@ -34,7 +34,7 @@ Now you are in a virtual environment!
   ```
   pip install -r requirements.txt
   ```
-5) to run the program write this command in terminal - 
+5) To run the program write this command in terminal - 
   ```
   python app.py
   ```
