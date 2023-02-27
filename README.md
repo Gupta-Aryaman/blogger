@@ -1,6 +1,9 @@
 <p align="center">
-  <img src="./static/blogger.png" alt="blogger">
+  <img width="32%" src="https://ibb.co/r22RQ7b">
 </p>
+
+![blogger](https://user-images.githubusercontent.com/34962578/221665529-44bd3ae0-e9e6-49d8-843e-9a0be59fe339.png)
+
 
 ## Requirements
 
@@ -17,3 +20,4 @@ Now you are in the virtual environment
 5) to run the program write this command in terminal - "python app.py"
 6) The url on which the app is running will be shown as - "Running on http://127.0.0.1:5000"
 7) Copy the url and paste it in the browser, if you see the login page the flask app is running successfully
+
