@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="![plot](./static/blogger.png)" alt="blogger">
+  <img src="./static/blogger.png" alt="blogger">
 </p>
 
 ## Requirements
