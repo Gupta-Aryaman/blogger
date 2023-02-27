@@ -1,3 +1,12 @@
+<p align="center">
+  <img src="![plot](./static/blogger.png)" alt="blogger">
+</p>
+
+## Requirements
+
+* `python` (Python 3.7 up to 3.10 supported)
+* `pip` (Python package manager)
+
 1) open the project folder and right click there and click open terminal
 2) create a virtual environment there by using this command - "python3 -m venv my-project-env"
 3) activate virutal environment by using this command(on ubnutu) - "source my-project-env/bin/activate"
