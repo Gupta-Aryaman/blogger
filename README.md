@@ -41,3 +41,5 @@ Now you are in a virtual environment!
 6) The url on which the app is running will be shown as - `Running on http://127.0.0.1:5000`
 7) Copy the url and paste it in the browser, if you see the login page the flask app is running successfully
 
+## ER Diagram
+![image](https://user-images.githubusercontent.com/34962578/221681295-60d7b295-4e23-4e84-a4bf-6eea695dee10.png)
